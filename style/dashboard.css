@@ -1,0 +1,66 @@
+
+.container{
+    padding-bottom: 70px;
+}
+
+#logo-text{
+    display: inline;
+    margin-left: 8px;
+}
+
+#logo {
+    margin-bottom: 1.15rem !important;
+}
+
+.controls{
+    background: #F2994A;  /* fallback for old browsers */
+background: -webkit-linear-gradient(to left, #F2C94C, #F2994A);  /* Chrome 10-25, Safari 5.1-6 */
+background: linear-gradient(to left, #F2C94C, #F2994A); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
+position: fixed;
+bottom : 56px;
+left: 0px;
+width: 100%;
+z-index: 10;
+-webkit-box-shadow: -1px -12px 41px -10px rgba(0,0,0,0.42);
+-moz-box-shadow: -1px -12px 41px -10px rgba(0,0,0,0.42);
+box-shadow: -1px -12px 41px -10px rgba(0,0,0,0.42);
+}
+
+#canvas{
+    display : none;
+    margin-top: 0px !important;
+    margin-bottom: 80px;
+    border-radius: 10px;
+    
+}
+
+#video{
+    max-height: 60vh;
+}
+@media screen and (max-width: 600px) {
+    video {
+        object-fit: fill;
+    }
+}
+
+#snap{
+    background-color: Transparent;
+    background-repeat:no-repeat;
+    border: none;
+    cursor:pointer;
+    overflow: hidden;
+    outline:none;
+}
+
+#check {
+    display: none;
+}
+
+.transparent{
+    background-color: Transparent;
+    background-repeat:no-repeat;
+    border: none;
+    cursor:pointer;
+    overflow: hidden;
+    outline:none;
+}
