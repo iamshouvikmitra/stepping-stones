@@ -1,3 +1,11 @@
+// Global Variables
+var latitude, longitude;
+
+// Variable to store authentication state of user
+var isSignedIn = false;
+var uid = '';
+var displayName = '';
+
 var config = {
     apiKey: "AIzaSyAgieNUXJNQhcidxvbiNtOvWr48URVkc4o",
     authDomain: "stepping-stone-ditu.firebaseapp.com",
@@ -11,11 +19,12 @@ initApp = function () {
     firebase.auth().onAuthStateChanged(function (user) {
         if (user) {
             // User is signed in.
-            var displayName = user.displayName;
+            displayName = user.displayName;
             var email = user.email;
             var emailVerified = user.emailVerified;
             var photoURL = user.photoURL;
-            var uid = user.uid;
+            uid = user.uid;
+            isSignedIn = true;
             var phoneNumber = user.phoneNumber;
             var providerData = user.providerData;
             //   user.getIdToken().then(function (accessToken) {
@@ -43,6 +52,9 @@ initApp = function () {
         console.log(error);
     });
 };
+
+// Get a reference to the database service
+var database = firebase.database();
 
 window.addEventListener('load', function () {
     initApp()
@@ -100,13 +112,115 @@ function getLocation() {
     if (navigator.geolocation) {
         navigator.geolocation.getCurrentPosition(showPosition);
     } else {
-        document.getElementById('locationInfo').innerHTML = "Geolocation is not supported by this browser.";
+        document.getElementById('locationInfo').value = "Geolocation is not supported by this browser.";
     }
 }
 
 function showPosition(position) {
-    document.getElementById('locationInfo').innerHTML = "Latitude: " + position.coords.latitude +
-        "<br>Longitude: " + position.coords.longitude;
+    // document.getElementById('latitude').innerText = position.coords.latitude
+    // document.getElementById('longitude').innerText = position.coords.longitude;
+    latitude = position.coords.latitude;
+    longitude = position.coords.longitude;
+    var map = new google.maps.Map(document.getElementById('map'), {
+        zoom: 16,
+        center: new google.maps.LatLng(latitude, longitude),
+        mapTypeId: google.maps.MapTypeId.ROADMAP,
+        gestureHandling: 'cooperative', minZoom: 16,
+        panControl: false,
+        draggable: false,
+        disableDefaultUI: true,
+    });
+
+    var myMarker = new google.maps.Marker({
+        position: new google.maps.LatLng(latitude, longitude),
+        draggable: true,
+        map: map
+    });
+
+    google.maps.event.addListener(myMarker, 'dragend', function (evt) {
+        latitude = evt.latLng.lat()
+        longitude = evt.latLng.lng()
+        console.log(evt.latLng.lat().toFixed(3) + ',' + evt.latLng.lng().toFixed(3))
+    });
+
+}
+
+function uploadImage() {
+    var canvas = document.getElementById("canvas");
+    var img = canvas.toDataURL("image/png");
+    var img
+    fetch(img)
+        .then(res => res.blob())
+        .then(blob => {
+            var formData = new FormData()
+            formData.append('type', 'file')
+            formData.append('image', blob)
+
+            return fetch('https://api.imgur.com/3/upload.json', {
+                method: 'POST',
+                headers: {
+                    Accept: 'application/json',
+                    Authorization: 'Client-ID dc708f3823b7756'// imgur specific
+                },
+                body: formData
+            })
+                .then(function (res) { return res.json(); })
+                .then(function (data) { return data['data']['link'] })
+        })
+
+
+}
+
+
+
+// Save Item information to database
+function saveDataToFirebase() {
+    document.getElementById("save-btn").innerText = "Saving ..."
+    document.getElementById("save-btn").disabled = true;
+    if (isSignedIn) { //Check if user is signed-in
+        // pushing items with unique key
+        var desc = document.getElementById('description').value;
+        displayName = displayName === null ? "Anonymous User" : displayName
+
+        // Upload Image
+        var canvas = document.getElementById("canvas");
+        var img = canvas.toDataURL("image/png");
+        var img
+        fetch(img)
+            .then(res => res.blob())
+            .then(blob => {
+                var formData = new FormData()
+                formData.append('type', 'file')
+                formData.append('image', blob)
+
+                return fetch('https://api.imgur.com/3/upload.json', {
+                    method: 'POST',
+                    headers: {
+                        Accept: 'application/json',
+                        Authorization: 'Client-ID dc708f3823b7756'// imgur specific
+                    },
+                    body: formData
+                })
+                    .then(function (res) { return res.json(); })
+                    .then(function (data) {
+                        imgUrl = data['data']['link']
+                        database.ref('users/' + uid + "/").push().set({
+                            lat: latitude,
+                            lng: longitude,
+                            desc: desc,
+                            img: imgUrl,
+                            user: displayName
+                        });
+                        window.location.href = '/view.html'
+                        initMap(); //refresh map with new markers added. 
+                    })
+            })
+    }
+    else {
+        console.log('unable to save data to firebase!');
+        document.getElementById("save-btn").innerText = "Save"
+        document.getElementById("save-btn").disabled = false;
+    }
 }
 
 
@@ -137,21 +251,21 @@ function signOut() {
 //   });
 // }
 
-async function predictWithCocoModel()
-{
-  const model = await cocoSsd.load();
-  this.detectFrame(video,model);
-  
-}
+// async function predictWithCocoModel()
+// {
+//   const model = await cocoSsd.load();
+//   this.detectFrame(video,model);
+
+// }
 
 
-detectFrame = (video, model) => {
-    model.detect(video).then(predictions => {
-    // this.renderPredictions(predictions);
-    predictions.forEach(element => {
-        console.log(element.class)
-    });
-    requestAnimationFrame(() => {
-    this.detectFrame(video, model);});
-    });
-  }
+// detectFrame = (video, model) => {
+//     model.detect(video).then(predictions => {
+//     // this.renderPredictions(predictions);
+//     predictions.forEach(element => {
+//         console.log(element.class)
+//     });
+//     requestAnimationFrame(() => {
+//     this.detectFrame(video, model);});
+//     });
+//   }

@@ -1,0 +1,13 @@
+/* Set the size of the div element that contains the map */
+#map {
+    padding: 0px;
+    margin: 0px;
+    height: 92vh;
+    width: 100%;
+    cursor: pointer !important;
+    /* The width is the width of the web page */
+}
+
+body{
+    font-family: 'Viga', sans-serif;
+}

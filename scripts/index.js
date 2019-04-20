@@ -2,6 +2,7 @@
 // FirebaseUI config.
 var uiConfig = {
     signInSuccessUrl: 'http://localhost:5500/dashboard.html',
+    // signInSuccessUrl: 'https://6b7eb1a4.ngrok.io/dashboard.html',
     signInOptions: [
       // Leave the lines as is for the providers you want to offer your users.
       firebase.auth.GoogleAuthProvider.PROVIDER_ID,
@@ -16,9 +17,11 @@ var uiConfig = {
     // function.
     // Terms of service url/callback.
     tosUrl: 'http://localhost:5500/tos.html',
+    // tosUrl: 'http://6b7eb1a4.ngrok.io/tos.html',
     // Privacy policy url/callback.
     privacyPolicyUrl: function() {
       window.location.assign('http://localhost:5500/privacy.html');
+      // window.location.assign('https://6b7eb1a4.ngrok.io/privacy.html');
     }
   };
 
