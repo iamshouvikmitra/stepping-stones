@@ -1,6 +1,6 @@
-# Stepping Stone - An Web based application for Road Defect Discovery via crowdsourcing 
+# MEND - An Web based application for Road Defect Discovery via crowdsourcing 
 
-# Welcome to Stepping Stones Readme.
+## Welcome to MEND Readme.
 
 In order to get up and running with the project you need to serve the static HTML files
 via an Simple HTTP server.
